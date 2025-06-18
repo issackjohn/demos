@@ -8,14 +8,15 @@ const demoData = [
         tags: ['JavaScript', 'Modules', 'JSON', 'CORS', 'V8'],
         status: 'broken',
         date: '2025-06-18',
-        path: 'demos/json-module-errors/',
-        code: `
+        path: 'demos/json-module-errors/',        code: `
 // JSON Module Import - WITHOUT crossorigin
-import data from './broken-data.json' assert { type: 'json' };
+<script type="module" onerror="handleModuleError(event)">
+  import data from './broken-data.json' with { type: 'json' };
+</script>
 
 // JSON Module Import - WITH crossorigin
-<script type="module" crossorigin>
-  import data from './broken-data.json' assert { type: 'json' };
+<script type="module" crossorigin onerror="handleModuleError(event)">
+  import data from './broken-data.json' with { type: 'json' };
 </script>
 
 // The broken JSON file (missing comma)

@@ -99,11 +99,10 @@
             This page imports an <strong>invalid JSON module WITHOUT</strong> the <code>crossorigin</code> attribute.
             Error details should be <strong>sanitized</strong>, hiding line/column information and specific error messages.
         </p>
-        
-        <div class="demo-container">
+          <div class="demo-container">
             <p>Using:</p>
-            <code>&lt;script type="module"&gt;
-    import data from '../broken-data.json' assert { type: 'json' };
+            <code>&lt;script type="module" onerror="handleModuleError(event)"&gt;
+    import data from '../broken-data.json' with { type: 'json' };
     console.log('Data loaded:', data);
 &lt;/script&gt;</code>
         </div>
@@ -127,8 +126,7 @@
         
         // Clear initial message
         logContainer.innerHTML = '';
-        
-        // Helper to log messages to UI
+          // Helper to log messages to UI
         function logToUI(message, type = 'normal') {
             const entry = document.createElement('div');
             entry.className = `log-entry ${type}`;
@@ -137,9 +135,24 @@
             console.log(message);
         }
         
+        // Initialize logging array like WPT
+        document._log = [];
+        
+        // Module error handler
+        function handleModuleError(event) {
+            document._log.push('module load error');
+            logToUI('Module load error (sanitized)', 'error');
+            event.preventDefault();
+        }
+        
         // Error event handler
         window.addEventListener('error', (event) => {
             logToUI(`ERROR: ${event.message}`, 'error');
+            
+            // Check if this is a MIME type error
+            if (event.message.includes('MIME type')) {
+                logToUI('This appears to be a server MIME type configuration issue, not the JSON parsing error we\'re testing', 'warning');
+            }
             
             // Prevent default browser error handling
             event.preventDefault();
@@ -148,7 +161,8 @@
         // Unhandled promise rejection handler
         window.addEventListener('unhandledrejection', (event) => {
             const error = event.reason;
-            logToUI(`PROMISE REJECTION: ${error.message || 'Unknown error'}`, 'error');
+            document._log.push('promise rejection');
+            logToUI(`Promise rejection: ${error.message || 'Unknown error'}`, 'error');
             
             // Log additional details if available
             if (error.lineNumber) {
@@ -160,20 +174,31 @@
         });
         
         logToUI('Event handlers registered, loading module...');
-    </script>
-    
-    <!-- This script imports the broken JSON module WITHOUT crossorigin -->
-    <script type="module">
+        
+        // Display log after a short delay
+        setTimeout(() => {
+            if (document._log.length > 0) {
+                logToUI(`Captured events: ${document._log.join(', ')}`, 'success');
+            }
+        }, 2000);
+    </script>    <!-- This script imports the broken JSON module WITHOUT crossorigin -->
+    <script type="module" onerror="handleModuleError(event)">
         try {
-            import('../broken-data.json', { assert: { type: 'json' } })
-                .then(data => {
-                    console.log('Data loaded:', data);
+            import('../broken-data.json', { with: { type: 'json' } })
+                .then(module => {
+                    document._log.push('import success');
+                    console.log('Data loaded:', module.default);
+                    logToUI('Import succeeded unexpectedly', 'success');
                 })
                 .catch(error => {
+                    document._log.push('import error');
                     console.error('Import failed:', error);
+                    logToUI(`Import failed: ${error.message}`, 'error');
                 });
         } catch (error) {
+            document._log.push('immediate error');
             console.error('Immediate error:', error);
+            logToUI(`Immediate error: ${error.message}`, 'error');
         }
     </script>
 </body>
