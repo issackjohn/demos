@@ -35,45 +35,20 @@ demos/
 ├── styles.css              # Global styles and themes
 ├── script.js               # Interactive functionality
 ├── demos/                  # Individual demo directories
-│   ├── css-scroll-timeline/
-│   │   └── index.html
-│   ├── view-transitions/
-│   │   └── index.html
-│   └── container-queries/
-│       └── index.html
-├── bugs/                   # Bug reproduction cases
-│   └── origin-trial-validation/
+│   └── json-module-errors/
+│       ├── index.html      # Demo explanation page
+│       ├── broken-data.json # Intentionally invalid JSON
+│       ├── with-cors/      # Test with crossorigin attribute
+│       │   └── index.html
+│       └── no-cors/        # Test without crossorigin attribute
+│           └── index.html
 └── README.md
 ```
 
 ## 🎯 Demo Categories
 
-### 🎨 Rendering
-- **Container Queries**: Responsive design based on container size
-- **CSS Paint Worklet**: Custom painting with Houdini APIs
-- **CSS View Transitions**: Smooth page transitions
-
-### 🔧 Web APIs
-- **View Transitions API**: Smooth SPA navigation
-- **Web Locks API**: Cross-tab coordination
-- **Origin Trials**: Experimental feature testing
-- **Progressive Enhancement**: Graceful fallbacks
-
-### ⚡ Performance
-- **Loading Optimizations**: Resource hints and preloading
-- **Animation Performance**: GPU-accelerated effects
-- **Bundle Analysis**: Code splitting demonstrations
-
-### 🔒 Security
-- **Content Security Policy**: CSP implementation examples
-- **Cross-Origin Isolation**: COEP/COOP configurations
-- **Secure Contexts**: HTTPS-only features
-
-### 🐛 Bug Reproductions
+###  Bug Reproductions
 - **JSON Module Error Sanitization**: Error handling issues with imported JSON modules
-- **Origin Trial Issues**: Token validation problems
-- **Rendering Bugs**: Layout and painting issues
-- **API Inconsistencies**: Behavior differences across browsers
 
 ## 🛠️ Adding New Demos
 
