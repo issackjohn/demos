@@ -155,17 +155,11 @@
             V8 must sanitize parse errors unless the module is fetched with proper CORS headers and a <code>crossorigin</code> attribute. 
             Currently, out-of-the-box JSON module errors are always overly sanitized (hiding useful line/column and message), 
             even when CORS would allow full error details.
-        </p>
-          <h2>Demo Explanation</h2>
+        </p>        <h2>Demo Explanation</h2>
         <p>
             This proof-of-concept demonstrates the difference between JSON module import errors with and without the <code>crossorigin</code> attribute. 
             The demo uses a single invalid JSON file (missing a comma) and shows how error reporting differs between the two approaches.
         </p>
-          <div class="info-panel" style="background: #fef3c7; border-left-color: #f59e0b;">
-            <strong>Important:</strong> JSON modules are still experimental and have limited browser support. 
-            GitHub Pages serves JSON files with the correct MIME type automatically, but the JSON module feature itself 
-            may not be fully supported in all browsers yet.
-        </div>
         
         <h3>Expected Behavior</h3>
         <table>
@@ -182,19 +176,7 @@
                 <td>Full parse error with message, line, and column information</td>
             </tr>
         </table>
-        
-        <h2>Testing Instructions</h2>
-        <div class="info-panel">
-            <strong>To test this demo properly:</strong>
-            <ol style="margin: 0.5rem 0; padding-left: 1rem;">
-                <li>Use Chrome Canary or Chrome Dev channel</li>
-                <li>Enable experimental features at <code>chrome://flags/#enable-experimental-web-platform-features</code></li>
-                <li>Restart your browser</li>
-                <li>Open the demo pages below</li>
-            </ol>
-        </div>
-        
-        <div class="demo-buttons">
+          <div class="demo-buttons">
             <a href="no-cors/index.html" class="demo-button">Test WITHOUT crossorigin</a>
             <a href="with-cors/index.html" class="demo-button">Test WITH crossorigin</a>
         </div>
@@ -220,44 +202,7 @@
             <li>Include <code>onerror</code> handlers on the script tags</li>
             <li>Use a <code>document._log</code> array to capture events like the WPT tests</li>
             <li>Display captured errors directly in the UI</li>
-            <li>Are served from the same origin</li>
-        </ul>        <h2>Current Status & Limitations</h2>
-        <div class="info-panel" style="background: #fef3c7; border-left-color: #f59e0b;">
-            <strong>GitHub Pages Limitations:</strong> 
-            <ul style="margin: 0.5rem 0; padding-left: 1rem;">
-                <li>No server configuration options (no .htaccess support)</li>
-                <li>JSON files are served with standard MIME types</li>
-                <li>CORS headers are automatically configured for same-origin requests</li>
-            </ul>
-        </div>
-        
-        <div class="info-panel" style="background: #ddd6fe; border-left-color: #8b5cf6;">
-            <strong>Browser Support:</strong> JSON modules with <code>with { type: 'json' }</code> require:
-            <ul style="margin: 0.5rem 0; padding-left: 1rem;">
-                <li>Chrome 91+ (with experimental flags enabled)</li>
-                <li>Firefox: Behind flags</li>
-                <li>Safari: Not yet supported</li>
-            </ul>
-        </div>
-        
-        <h3>Expected vs. Actual Behavior</h3>
-        <table>
-            <tr>
-                <th>Scenario</th>
-                <th>Expected Error</th>
-                <th>Current Behavior</th>
-            </tr>
-            <tr>
-                <td>Invalid JSON + No crossorigin</td>
-                <td>Generic "Failed to load JSON module"</td>
-                <td>May show MIME type error first</td>
-            </tr>
-            <tr>
-                <td>Invalid JSON + With crossorigin</td>
-                <td>Detailed parse error with line/column</td>
-                <td>May show MIME type error first</td>
-            </tr>
-        </table>
+            <li>Are served from the same origin</li>        </ul>
     </div>
 </body>
 </html>
