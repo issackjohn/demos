@@ -1,40 +1,6 @@
 // Demo data structure
 const demoData = [
     {
-        id: 'css-scroll-timeline',
-        title: 'CSS Scroll-driven Animations',
-        description: 'Demonstrate scroll-linked animations using the new CSS @scroll-timeline feature.',
-        category: 'rendering',
-        tags: ['CSS', 'Animation', 'Scroll', 'Timeline'],
-        status: 'experimental',
-        date: '2025-06-18',
-        path: 'demos/css-scroll-timeline/',
-        code: `
-/* CSS Scroll Timeline Demo */
-@scroll-timeline scroll-in-view {
-    source: selector(#scroller);
-    orientation: block;
-}
-
-.animated-element {
-    animation: fade-in-scale 1s ease-out both;
-    animation-timeline: scroll-in-view;
-    animation-range: entry 0% exit 50%;
-}
-
-@keyframes fade-in-scale {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-        `.trim()
-    },
-    {
         id: 'view-transitions',
         title: 'View Transitions API',
         description: 'Smooth page transitions using the View Transitions API for single-page applications.',
@@ -129,6 +95,32 @@ navigator.locks.query().then(state => {
     console.log('Held locks:', state.held);
     console.log('Pending locks:', state.pending);
 });
+        `.trim()
+    },    {
+        id: 'json-module-errors',
+        title: 'JSON Module Error Sanitization',
+        description: 'Demo showing how JSON module import errors are sanitized with and without the crossorigin attribute.',
+        category: 'bugs',
+        tags: ['JavaScript', 'Modules', 'JSON', 'CORS', 'V8'],
+        status: 'broken',
+        date: '2025-06-18',
+        path: 'demos/json-module-errors/',
+        code: `
+// JSON Module Import - WITHOUT crossorigin
+import data from './broken-data.json' assert { type: 'json' };
+
+// JSON Module Import - WITH crossorigin
+<script type="module" crossorigin>
+  import data from './broken-data.json' assert { type: 'json' };
+</script>
+
+// The broken JSON file (missing comma)
+{
+  "properties": {
+    "test": true,
+    "count": 42
+  } "missingComma": true
+}
         `.trim()
     },
     {

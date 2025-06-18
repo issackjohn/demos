@@ -49,7 +49,6 @@ demos/
 ## 🎯 Demo Categories
 
 ### 🎨 Rendering
-- **CSS Scroll-driven Animations**: New `@scroll-timeline` API
 - **Container Queries**: Responsive design based on container size
 - **CSS Paint Worklet**: Custom painting with Houdini APIs
 - **CSS View Transitions**: Smooth page transitions
@@ -71,6 +70,7 @@ demos/
 - **Secure Contexts**: HTTPS-only features
 
 ### 🐛 Bug Reproductions
+- **JSON Module Error Sanitization**: Error handling issues with imported JSON modules
 - **Origin Trial Issues**: Token validation problems
 - **Rendering Bugs**: Layout and painting issues
 - **API Inconsistencies**: Behavior differences across browsers

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Module Error Demo - Without crossorigin</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: #f8fafc;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #3b82f6;
+            margin-bottom: 1rem;
+        }
+
+        .demo-container {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #f1f5f9;
+            border-radius: 0.5rem;
+            border-left: 4px solid #3b82f6;
+        }
+
+        code {
+            background: #e2e8f0;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .log-container {
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            margin-top: 1rem;
+        }
+
+        .log-entry {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            border-bottom: 1px solid #475569;
+        }
+
+        .error {
+            color: #f87171;
+        }
+
+        .warning {
+            color: #fbbf24;
+        }
+
+        .success {
+            color: #4ade80;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .nav-links a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-links">
+            <a href="../../../index.html">← Back to Demos</a>
+            <a href="../index.html">↑ JSON Module Errors Demo Home</a>
+        </div>
+        
+        <h1>JSON Module Error Demo - WITHOUT crossorigin</h1>
+        <p>
+            This page imports an <strong>invalid JSON module WITHOUT</strong> the <code>crossorigin</code> attribute.
+            Error details should be <strong>sanitized</strong>, hiding line/column information and specific error messages.
+        </p>
+        
+        <div class="demo-container">
+            <p>Using:</p>
+            <code>&lt;script type="module"&gt;
+    import data from '../broken-data.json' assert { type: 'json' };
+    console.log('Data loaded:', data);
+&lt;/script&gt;</code>
+        </div>
+        
+        <p>The errors will be captured below and in your browser's console:</p>
+        
+        <div class="log-container" id="logContainer">
+            <div class="log-entry">Waiting for errors...</div>
+        </div>
+        
+        <h3>Expected Result:</h3>
+        <p>You should see a <strong>generic error message</strong> without specific line/column information or the exact parse error details.</p>
+        
+        <div class="nav-links">
+            <a href="../with-cors/index.html">→ Try WITH crossorigin attribute</a>
+        </div>
+    </div>
+    
+    <script>
+        const logContainer = document.getElementById('logContainer');
+        
+        // Clear initial message
+        logContainer.innerHTML = '';
+        
+        // Helper to log messages to UI
+        function logToUI(message, type = 'normal') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = message;
+            logContainer.appendChild(entry);
+            console.log(message);
+        }
+        
+        // Error event handler
+        window.addEventListener('error', (event) => {
+            logToUI(`ERROR: ${event.message}`, 'error');
+            
+            // Prevent default browser error handling
+            event.preventDefault();
+        });
+        
+        // Unhandled promise rejection handler
+        window.addEventListener('unhandledrejection', (event) => {
+            const error = event.reason;
+            logToUI(`PROMISE REJECTION: ${error.message || 'Unknown error'}`, 'error');
+            
+            // Log additional details if available
+            if (error.lineNumber) {
+                logToUI(`Line: ${error.lineNumber}, Column: ${error.columnNumber}`, 'warning');
+            }
+            
+            // Prevent default browser error handling
+            event.preventDefault();
+        });
+        
+        logToUI('Event handlers registered, loading module...');
+    </script>
+    
+    <!-- This script imports the broken JSON module WITHOUT crossorigin -->
+    <script type="module">
+        try {
+            import('../broken-data.json', { assert: { type: 'json' } })
+                .then(data => {
+                    console.log('Data loaded:', data);
+                })
+                .catch(error => {
+                    console.error('Import failed:', error);
+                });
+        } catch (error) {
+            console.error('Immediate error:', error);
+        }
+    </script>
+</body>
+</html>

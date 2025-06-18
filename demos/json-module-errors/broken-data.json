@@ -1,0 +1,9 @@
+{
+  "name": "JSON Module Error Test",
+  "description": "This JSON file is intentionally invalid",
+  "version": "1.0.0",
+  "properties": {
+    "test": true,
+    "count": 42
+  } "missingComma": true
+}
