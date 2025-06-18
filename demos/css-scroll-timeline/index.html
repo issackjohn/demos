@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Scroll-driven Animations Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slide-up 1s ease-out 0.5s forwards;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .scroll-container {
+            height: 400px;
+            overflow-y: scroll;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .scroll-content {
+            height: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .animated-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2rem;
+            border-radius: 1rem;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            opacity: 0;
+            transform: translateX(-100px) scale(0.8);
+        }
+
+        /* Scroll-driven animations */
+        @supports (animation-timeline: scroll()) {
+            @scroll-timeline scroll-in-view {
+                source: selector(.scroll-container);
+                orientation: block;
+            }
+
+            .animated-card {
+                animation: slide-in-scale 1s ease-out both;
+                animation-timeline: scroll-in-view;
+                animation-range: entry 0% exit 30%;
+            }
+
+            .animated-card:nth-child(even) {
+                transform: translateX(100px) scale(0.8);
+            }
+        }
+
+        @keyframes slide-in-scale {
+            from {
+                opacity: 0;
+                transform: translateX(var(--start-x, -100px)) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        @keyframes slide-up {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fallback-message {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.5);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .demo-info {
+            margin-top: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .demo-info h3 {
+            margin-bottom: 1rem;
+        }
+
+        .demo-info code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-link">← Back to Demos</a>
+        
+        <div class="header">
+            <h1>CSS Scroll-driven Animations</h1>
+            <p>Experience smooth animations triggered by scroll position</p>
+        </div>
+
+        <div id="fallback" class="fallback-message" style="display: none;">
+            ⚠️ Your browser doesn't support CSS Scroll-driven Animations yet. 
+            Try Chrome Canary with the "Experimental Web Platform features" flag enabled.
+        </div>
+
+        <div class="scroll-container">
+            <div class="scroll-content">
+                <div class="animated-card">
+                    <h3>🎨 Card 1</h3>
+                    <p>This card slides in from the left as you scroll down. The animation is driven entirely by your scroll position!</p>
+                </div>
+                
+                <div class="animated-card">
+                    <h3>🚀 Card 2</h3>
+                    <p>This one comes from the right. Each card has its own animation timeline based on when it enters the viewport.</p>
+                </div>
+                
+                <div class="animated-card">
+                    <h3>⭐ Card 3</h3>
+                    <p>Notice how the animations are perfectly synchronized with your scrolling speed - fast scroll, fast animation!</p>
+                </div>
+                
+                <div class="animated-card">
+                    <h3>🔥 Card 4</h3>
+                    <p>These animations use the new @scroll-timeline CSS feature, no JavaScript required!</p>
+                </div>
+                
+                <div class="animated-card">
+                    <h3>💫 Card 5</h3>
+                    <p>Scroll back up to see the animations reverse smoothly. This is the future of scroll-driven UX!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-info">
+            <h3>How it works</h3>
+            <p>This demo uses the experimental CSS <code>@scroll-timeline</code> feature to create scroll-driven animations. The animations are defined in CSS and automatically sync with the scroll position of the container.</p>
+            
+            <h3 style="margin-top: 2rem;">Browser Support</h3>
+            <p>Currently supported in Chrome with experimental flags enabled. This feature is part of the CSS Animations Level 2 specification.</p>
+        </div>
+    </div>
+
+    <script>
+        // Check for scroll timeline support
+        if (!CSS.supports('animation-timeline', 'scroll()')) {
+            document.getElementById('fallback').style.display = 'block';
+            
+            // Fallback: Use Intersection Observer for basic animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateX(0) scale(1)';
+                        entry.target.style.transition = 'all 0.6s ease-out';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.animated-card').forEach(card => {
+                observer.observe(card);
+            });
+        }
+    </script>
+</body>
+</html>
