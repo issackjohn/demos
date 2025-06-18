@@ -204,16 +204,6 @@ The site includes basic analytics to track:
 - [MDN Web Docs](https://developer.mozilla.org/)
 - [Can I Use](https://caniuse.com/)
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- The Chromium team for their excellent developer tools
-- The web standards community for pushing the platform forward
-- Fellow developers sharing knowledge and best practices
-
 ---
 
 **Made with ❤️ for the Chromium community**
