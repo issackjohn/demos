@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">            <div class="filter-container">
+                <button class="filter-btn active" data-category="all">All</button>
+                <button class="filter-btn" data-category="rendering">Rendering</button>
+                <button class="filter-btn" data-category="apis">Web APIs</button>
+                <button class="filter-btn" data-category="performance">Performance</button>
+                <button class="filter-btn" data-category="security">Security</button>
+                <button class="filter-btn" data-category="bugs">Bugs</button>
+            </div>name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Issack's Chromium Demos & Repros</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
@@ -39,12 +45,10 @@
                 <h2 class="hero-title">
                     <span class="gradient-text">Chromium Development</span>
                     <br>Demos & Reproductions
-                </h2>
-                <p class="hero-description">
+                </h2>                <p class="hero-description">
                     A collection of interactive demos, bug reproductions, and experimental features 
                     for Chromium development and web platform testing.
-                </p>
-                <div class="hero-stats">
+                </p>                <div class="hero-stats">
                     <div class="stat">
                         <span class="stat-number" id="demoCount">0</span>
                         <span class="stat-label">Demos</span>

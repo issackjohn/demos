@@ -1,18 +1,19 @@
-# 🧪 Chromium Demos & Reproductions
+# 🧪 Chromium Development Demos
 
-A curated collection of interactive demonstrations, bug reproductions, and experimental features for Chromium development and web platform testing.
+A collection of interactive demos, bug reproductions, and experimental features for Chromium development and web platform testing.
 
 🌐 **Live Site**: [https://issackjohn.github.io/demos](https://issackjohn.github.io/demos)
 
-## ✨ Features
+## ✨ Current Demos
 
-- **Interactive Demos**: Hands-on examples of cutting-edge web technologies
-- **Bug Reproductions**: Minimal test cases for reported issues
-- **Experimental APIs**: Early access features and origin trials
-- **Responsive Design**: Works beautifully on all devices
-- **Dark/Light Themes**: Toggle between themes for comfortable viewing
-- **Live Code Preview**: See the code behind each demonstration
-- **Search & Filter**: Easily find demos by category or technology
+### JSON Module Error Sanitization
+Demonstrates how JSON module import errors are sanitized with and without the `crossorigin` attribute, showing a bug where detailed error information is hidden even when CORS would allow it.
+
+**Test Cases**: 
+- **Without `crossorigin`**: Shows generic errors (expected behavior)
+- **With `crossorigin`**: Should show detailed parse errors but doesn't (bug)
+- Uses intentionally invalid JSON to trigger parsing errors
+- Based on Web Platform Test (WPT) patterns
 
 ## 🚀 Quick Start
 
@@ -21,18 +22,17 @@ A curated collection of interactive demonstrations, bug reproductions, and exper
    ```bash
    git clone https://github.com/issackjohn/demos.git
    cd demos
-   # Open index.html in your browser or serve with a local server
    python -m http.server 8000  # Python 3
-   # or
-   npx http-server
+   # or use any static server
    ```
+3. **Explore**: Navigate through the available demos and experiments
 
 ## 📁 Project Structure
 
 ```
 demos/
 ├── index.html              # Main landing page
-├── styles.css              # Global styles and themes
+├── styles.css              # Global styles and themes  
 ├── script.js               # Interactive functionality
 ├── demos/                  # Individual demo directories
 │   └── json-module-errors/
@@ -45,12 +45,7 @@ demos/
 └── README.md
 ```
 
-## 🎯 Demo Categories
-
-###  Bug Reproductions
-- **JSON Module Error Sanitization**: Error handling issues with imported JSON modules
-
-## 🛠️ Adding New Demos
+## �️ Adding New Demos
 
 ### 1. Create Demo Directory
 ```bash
@@ -67,7 +62,6 @@ cd demos/your-demo-name
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Demo Title</title>
-    <!-- Add your styles -->
 </head>
 <body>
     <a href="../../index.html" class="back-link">← Back to Demos</a>
@@ -92,7 +86,7 @@ Add your demo to the `demoData` array in `script.js`:
     category: 'rendering', // or 'apis', 'performance', 'security', 'bugs'
     tags: ['CSS', 'JavaScript', 'YourTechnology'],
     status: 'experimental', // or 'stable', 'broken'
-    date: '2025-06-18',
+    date: '2025-06-19',
     path: 'demos/your-demo-name/',
     code: `
         // Optional: Sample code to display in modal
@@ -103,84 +97,20 @@ Add your demo to the `demoData` array in `script.js`:
 
 ## 🎨 Design Guidelines
 
-### Visual Design
-- Use CSS custom properties for theming
-- Implement smooth transitions and animations
-- Ensure accessibility with proper contrast ratios
-- Follow responsive design principles
-
-### Code Structure
 - Keep demos self-contained in their directories
-- Include fallbacks for unsupported features
-- Add clear comments explaining the technology
-- Provide links back to the main site
-
-### Browser Support
+- Include clear documentation and examples
+- Use modern web standards and best practices
 - Test in latest Chrome/Chromium builds
-- Include feature detection and graceful degradation
-- Document browser support requirements
-- Use progressive enhancement patterns
-
-## 🔧 Development Tools
-
-### Recommended Extensions
-- **Live Server**: For local development
-- **Chrome DevTools**: For debugging and profiling
-- **Lighthouse**: For performance auditing
-
-### Useful Flags
-Enable experimental features in Chrome:
-```
-chrome://flags/#enable-experimental-web-platform-features
-chrome://flags/#enable-experimental-canvas-features
-chrome://flags/#enable-experimental-productivity-features
-```
-
-## 📊 Analytics & Monitoring
-
-The site includes basic analytics to track:
-- Demo popularity and usage patterns
-- Browser support statistics
-- Performance metrics
-- User feedback and bug reports
+- Provide fallbacks for unsupported features
 
 ## 🤝 Contributing
 
+### Adding Demos
+Feel free to contribute new demos, bug reproductions, or experimental features! Follow the structure above and submit a pull request.
+
 ### Bug Reports
-1. Check existing issues first
-2. Provide minimal reproduction steps
-3. Include browser version and flags
-4. Add screenshots or screen recordings
-
-### Feature Requests
-1. Describe the use case clearly
-2. Link to relevant specifications
-3. Consider browser support implications
-4. Suggest implementation approach
-
-### Code Contributions
-1. Fork the repository
-2. Create a feature branch
-3. Follow existing code style
-4. Test across browsers
-5. Submit a pull request
-
-## 📚 Resources
-
-### Specifications
-- [CSS Animations Level 2](https://drafts.csswg.org/css-animations-2/)
-- [View Transitions](https://drafts.csswg.org/css-view-transitions/)
-- [CSS Container Queries](https://drafts.csswg.org/css-contain-3/)
-- [Web Locks API](https://w3c.github.io/web-locks/)
-
-### Tools & References
-- [Chromium Source](https://chromium.googlesource.com/chromium/src/)
-- [Chrome Platform Status](https://chromestatus.com/)
-- [MDN Web Docs](https://developer.mozilla.org/)
-- [Can I Use](https://caniuse.com/)
+Found an issue? Please [open an issue](https://github.com/issackjohn/demos/issues) with reproduction steps and browser information.
 
 ---
 
-**Made with ❤️ for the Chromium community**
-
-For questions or suggestions, feel free to [open an issue](https://github.com/issackjohn/demos/issues) or reach out on GitHub.
+**Made for the Chromium development community** - exploring web platform features and behaviors.
