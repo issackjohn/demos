@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Particle Field · Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../demo.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+    <style>
+        .canvas-shell {
+            position: relative;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            background: #060912;
+        }
+        canvas { display: block; width: 100%; height: 440px; }
+        .hud {
+            position: absolute;
+            top: 0.85rem; left: 0.85rem;
+            display: flex; gap: 0.6rem;
+        }
+        .chip {
+            background: rgba(8, 12, 24, 0.7);
+            backdrop-filter: blur(6px);
+            border: 1px solid var(--border);
+            border-radius: 0.6rem;
+            padding: 0.4rem 0.7rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+        }
+        .chip b { color: var(--accent); }
+        #fps.good b { color: var(--success); }
+        #fps.warn b { color: var(--warning); }
+        #fps.bad  b { color: var(--error); }
+        .controls-row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-top: 1.25rem; }
+        .controls-row label { font-size: 0.85rem; color: var(--text-soft); display: flex; align-items: center; gap: 0.5rem; }
+        input[type=range] { accent-color: var(--accent); }
+        .hint { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.75rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="back-link" href="../../index.html">← Back to demos</a>
+
+        <div class="demo-hero">
+            <span class="eyebrow">✨ Performance</span>
+            <h1><span class="grad">Canvas</span> Particle Field</h1>
+            <p class="lead">
+                A constellation of particles animated on a <code>&lt;canvas&gt;</code> with
+                <code>requestAnimationFrame</code>. Move your mouse to disturb the field and
+                watch the live FPS meter stay locked to your display's refresh rate.
+            </p>
+        </div>
+
+        <div class="canvas-shell">
+            <div class="hud">
+                <div class="chip" id="fps">FPS <b>--</b></div>
+                <div class="chip">Particles <b id="count">0</b></div>
+            </div>
+            <canvas id="field"></canvas>
+        </div>
+
+        <div class="controls-row">
+            <label>Particles
+                <input id="density" type="range" min="30" max="220" value="110">
+            </label>
+            <label>Link distance
+                <input id="dist" type="range" min="60" max="200" value="130">
+            </label>
+            <button class="btn secondary" id="toggle">⏸ Pause</button>
+        </div>
+        <p class="hint">Tip: open this full-screen and move the cursor across the canvas.</p>
+
+        <div class="panel">
+            <h2>How it works</h2>
+            <pre><code>function loop(now) {
+  const fps = 1000 / (now - last);
+  last = now;
+  ctx.clearRect(0, 0, w, h);
+  for (const p of particles) { p.step(); p.draw(ctx); }
+  drawLinks(ctx, particles);   // connect nearby particles
+  raf = requestAnimationFrame(loop);
+}
+raf = requestAnimationFrame(loop);</code></pre>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('field');
+        const ctx = canvas.getContext('2d');
+        const fpsEl = document.getElementById('fps');
+        const countEl = document.getElementById('count');
+        const densityEl = document.getElementById('density');
+        const distEl = document.getElementById('dist');
+        const toggleBtn = document.getElementById('toggle');
+
+        let w, h, dpr, particles = [], raf = null, last = performance.now();
+        let linkDist = +distEl.value;
+        const mouse = { x: -9999, y: -9999 };
+
+        function resize() {
+            dpr = Math.min(window.devicePixelRatio || 1, 2);
+            w = canvas.clientWidth;
+            h = canvas.clientHeight;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function makeParticles(n) {
+            particles = Array.from({ length: n }, () => ({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                vx: (Math.random() - 0.5) * 0.6,
+                vy: (Math.random() - 0.5) * 0.6,
+                r: Math.random() * 1.8 + 1
+            }));
+            countEl.textContent = n;
+        }
+
+        function step(p) {
+            p.x += p.vx; p.y += p.vy;
+            if (p.x < 0 || p.x > w) p.vx *= -1;
+            if (p.y < 0 || p.y > h) p.vy *= -1;
+            // gentle attraction to the mouse
+            const dx = mouse.x - p.x, dy = mouse.y - p.y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < 140 * 140) {
+                p.vx += dx / d2 * 6;
+                p.vy += dy / d2 * 6;
+            }
+            // damping so it doesn't run away
+            p.vx *= 0.99; p.vy *= 0.99;
+        }
+
+        function frame(now) {
+            const dt = now - last;
+            last = now;
+            const fps = Math.round(1000 / dt);
+            fpsEl.innerHTML = 'FPS <b>' + (isFinite(fps) ? fps : '--') + '</b>';
+            fpsEl.className = 'chip ' + (fps >= 50 ? 'good' : fps >= 30 ? 'warn' : 'bad');
+
+            ctx.clearRect(0, 0, w, h);
+
+            for (const p of particles) {
+                step(p);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = '#a5b4fc';
+                ctx.fill();
+            }
+
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const a = particles[i], b = particles[j];
+                    const dx = a.x - b.x, dy = a.y - b.y;
+                    const dist = Math.hypot(dx, dy);
+                    if (dist < linkDist) {
+                        const alpha = 1 - dist / linkDist;
+                        ctx.strokeStyle = `rgba(99,102,241,${alpha * 0.6})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(a.x, a.y);
+                        ctx.lineTo(b.x, b.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            raf = requestAnimationFrame(frame);
+        }
+
+        function start() {
+            if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); }
+            toggleBtn.textContent = '⏸ Pause';
+        }
+        function stop() {
+            if (raf) { cancelAnimationFrame(raf); raf = null; }
+            toggleBtn.textContent = '▶ Resume';
+        }
+
+        canvas.addEventListener('pointermove', e => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
+        canvas.addEventListener('pointerleave', () => { mouse.x = mouse.y = -9999; });
+
+        densityEl.addEventListener('input', () => makeParticles(+densityEl.value));
+        distEl.addEventListener('input', () => { linkDist = +distEl.value; });
+        toggleBtn.addEventListener('click', () => raf ? stop() : start());
+        window.addEventListener('resize', () => { resize(); makeParticles(+densityEl.value); });
+
+        resize();
+        makeParticles(+densityEl.value);
+        start();
+    </script>
+</body>
+</html>

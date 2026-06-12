@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clipboard & Web Share · Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../demo.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+    <style>
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            resize: vertical;
+            background: #0b1120;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            padding: 0.9rem 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        textarea:focus { outline: none; border-color: var(--accent); }
+        .toast {
+            position: fixed;
+            left: 50%; bottom: 2rem;
+            transform: translateX(-50%) translateY(140%);
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.8rem 1.25rem;
+            border-radius: 2rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.35s cubic-bezier(.22,1,.36,1);
+            z-index: 60;
+            font-weight: 500;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.ok { border-color: var(--success); }
+        .toast.err { border-color: var(--error); }
+        .feature-row { display: flex; gap: 0.6rem; align-items: center; margin: 0.4rem 0; color: var(--text-soft); font-size: 0.92rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="back-link" href="../../index.html">← Back to demos</a>
+
+        <div class="demo-hero">
+            <span class="eyebrow">📋 Web APIs</span>
+            <h1><span class="grad">Clipboard</span> & Web Share</h1>
+            <p class="lead">
+                The async Clipboard API and the Web Share API let pages copy content
+                and open the native OS share sheet — securely, and only in response to
+                a user gesture.
+            </p>
+        </div>
+
+        <div class="panel">
+            <h2>1 · Copy to clipboard</h2>
+            <p>Edit the text below, then copy it with <code>navigator.clipboard.writeText()</code>.</p>
+            <textarea id="text" spellcheck="false">Hello from the Chromium Demos site! 🧪
+This text was copied with the async Clipboard API.</textarea>
+            <div class="btn-row" style="margin-top:1rem;">
+                <button class="btn" id="copyBtn">📋 Copy text</button>
+                <button class="btn secondary" id="pasteBtn">📥 Read clipboard</button>
+            </div>
+            <p id="pasteOut" style="margin-top:0.85rem; color:var(--text-muted); font-size:0.9rem;"></p>
+        </div>
+
+        <div class="panel">
+            <h2>2 · Native share sheet</h2>
+            <p>Invoke the OS share UI with the Web Share API. Falls back to copying the link where unsupported (most desktops).</p>
+            <div class="feature-row"><span id="shareSupport"></span></div>
+            <div class="btn-row" style="margin-top:0.5rem;">
+                <button class="btn" id="shareBtn">🔗 Share this demo</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>How it works</h2>
+            <pre><code>// Copy
+await navigator.clipboard.writeText(textarea.value);
+
+// Read (requires permission)
+const text = await navigator.clipboard.readText();
+
+// Native share with graceful fallback
+if (navigator.share) {
+  await navigator.share({ title, text, url: location.href });
+} else {
+  await navigator.clipboard.writeText(location.href);
+}</code></pre>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const toast = document.getElementById('toast');
+        let toastTimer;
+        function notify(msg, kind = 'ok') {
+            toast.textContent = msg;
+            toast.className = 'toast show ' + kind;
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+        }
+
+        document.getElementById('copyBtn').addEventListener('click', async () => {
+            const text = document.getElementById('text').value;
+            try {
+                await navigator.clipboard.writeText(text);
+                notify('✅ Copied to clipboard');
+            } catch (err) {
+                notify('⚠️ Clipboard blocked: ' + err.message, 'err');
+            }
+        });
+
+        document.getElementById('pasteBtn').addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById('pasteOut').textContent =
+                    'Clipboard contains: ' + (text ? '“' + text.slice(0, 120) + '”' : '(empty)');
+                notify('✅ Read clipboard');
+            } catch (err) {
+                document.getElementById('pasteOut').textContent =
+                    'Could not read clipboard (permission denied or unsupported).';
+                notify('⚠️ Read blocked', 'err');
+            }
+        });
+
+        const shareSupport = document.getElementById('shareSupport');
+        shareSupport.innerHTML = navigator.share
+            ? '<span class="badge ok">Web Share supported ✓</span>'
+            : '<span class="badge exp">Web Share unsupported — will copy link instead</span>';
+
+        document.getElementById('shareBtn').addEventListener('click', async () => {
+            const shareData = {
+                title: 'Chromium Demos',
+                text: 'Check out this Clipboard & Web Share demo',
+                url: location.href
+            };
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                    notify('✅ Shared');
+                } else {
+                    await navigator.clipboard.writeText(location.href);
+                    notify('🔗 Link copied (share unsupported)');
+                }
+            } catch (err) {
+                if (err.name !== 'AbortError') notify('⚠️ ' + err.message, 'err');
+            }
+        });
+    </script>
+</body>
+</html>

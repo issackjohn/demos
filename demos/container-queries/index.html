@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Container Queries · Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../demo.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📐</text></svg>">
+    <style>
+        .resizer { margin: 0 auto; transition: width 0.15s ease; }
+
+        .cq-wrapper { container-type: inline-size; }
+
+        .product {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .product .art {
+            aspect-ratio: 16 / 9;
+            display: grid; place-items: center;
+            font-size: 3rem;
+            background: linear-gradient(135deg, #6366f1, #06b6d4);
+        }
+        .product .body { padding: 1.25rem; }
+        .product h3 { font-size: 1.2rem; margin-bottom: 0.35rem; }
+        .product p { color: var(--text-soft); font-size: 0.92rem; }
+        .product .price { font-weight: 800; font-size: 1.3rem; margin-top: 0.75rem; color: var(--accent); }
+        .product .layout-label {
+            display: inline-block;
+            margin-top: 0.75rem;
+            font-size: 0.72rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+        }
+
+        /* Compact → horizontal layout based on the WRAPPER width */
+        @container (min-width: 420px) {
+            .product { grid-template-columns: 200px 1fr; align-items: center; }
+            .product .art { aspect-ratio: 1; height: 100%; }
+            .product .layout-label::before { content: 'layout: wide (@container ≥ 420px)'; }
+        }
+        @container (max-width: 419.98px) {
+            .product .layout-label::before { content: 'layout: stacked (@container < 420px)'; }
+        }
+
+        .range-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        input[type=range] { flex: 1; accent-color: var(--accent); }
+        .width-val { font-family: 'JetBrains Mono', monospace; color: var(--accent); min-width: 64px; text-align: right; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="back-link" href="../../index.html">← Back to demos</a>
+
+        <div class="demo-hero">
+            <span class="eyebrow">📐 Rendering</span>
+            <h1><span class="grad">Container</span> Queries</h1>
+            <p class="lead">
+                Media queries respond to the viewport. <strong>Container queries</strong>
+                let a component respond to the size of its own parent — so the same
+                component can be reused anywhere and adapt automatically.
+            </p>
+        </div>
+
+        <div class="panel">
+            <h2>Try it</h2>
+            <p>Drag the slider to resize the container. The card switches between a stacked and a wide layout based on <em>its container's</em> width — the viewport never changes.</p>
+            <div class="range-row" style="margin-top:1rem;">
+                <label for="w">Width</label>
+                <input id="w" type="range" min="240" max="820" value="340">
+                <span class="width-val" id="wv">340px</span>
+            </div>
+        </div>
+
+        <div class="resizer" id="resizer" style="width: 340px;">
+            <div class="cq-wrapper">
+                <article class="product">
+                    <div class="art">🎧</div>
+                    <div class="body">
+                        <h3>Studio Headphones</h3>
+                        <p>Reference-grade sound with adaptive noise cancelling.</p>
+                        <div class="price">$249</div>
+                        <span class="layout-label"></span>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>How it works</h2>
+            <pre><code>/* 1. Declare an element as a query container */
+.cq-wrapper { container-type: inline-size; }
+
+/* 2. Style children based on the CONTAINER's width */
+@container (min-width: 420px) {
+  .product { grid-template-columns: 200px 1fr; }
+}</code></pre>
+        </div>
+    </div>
+
+    <script>
+        const range = document.getElementById('w');
+        const resizer = document.getElementById('resizer');
+        const label = document.getElementById('wv');
+        function sync() {
+            resizer.style.width = range.value + 'px';
+            label.textContent = range.value + 'px';
+        }
+        range.addEventListener('input', sync);
+        sync();
+    </script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+/* ============================================================
+   Shared styles for individual demo pages
+   ============================================================ */
+:root {
+    --brand-1: #6366f1;
+    --brand-2: #8b5cf6;
+    --brand-3: #06b6d4;
+    --gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 45%, #06b6d4 100%);
+
+    --bg: #070b18;
+    --surface: #111a30;
+    --surface-2: #15203a;
+    --text: #f1f5f9;
+    --text-soft: #b6c2d9;
+    --text-muted: #7889a6;
+    --border: #1f2b47;
+    --accent: #818cf8;
+    --success: #34d399;
+    --warning: #fbbf24;
+    --error: #f87171;
+
+    --radius: 0.9rem;
+    --radius-sm: 0.55rem;
+    --shadow: 0 24px 48px -18px rgba(0, 0, 0, 0.65);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    min-height: 100vh;
+    padding: 2rem 1.25rem 4rem;
+    -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image:
+        radial-gradient(circle at 15% 0%, rgba(99, 102, 241, 0.22), transparent 42%),
+        radial-gradient(circle at 90% 5%, rgba(6, 182, 212, 0.18), transparent 40%);
+    pointer-events: none;
+}
+
+.container {
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-soft);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 2rem;
+    background: var(--surface);
+    transition: all 0.2s ease;
+    margin-bottom: 1.75rem;
+}
+.back-link:hover { border-color: var(--accent); color: var(--text); transform: translateX(-2px); }
+
+.demo-hero { margin-bottom: 2rem; }
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+}
+
+h1 {
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    margin-bottom: 0.75rem;
+}
+h1 .grad {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.lead { color: var(--text-soft); font-size: 1.08rem; max-width: 60ch; }
+
+.panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    margin: 1.5rem 0;
+}
+
+.panel h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.panel p { color: var(--text-soft); }
+
+.stage {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+code {
+    background: rgba(129, 140, 248, 0.14);
+    color: #c7d2fe;
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.35rem;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.9em;
+}
+
+pre {
+    background: #0b1120;
+    border: 1px solid var(--border);
+    color: #e2e8f0;
+    padding: 1.1rem 1.25rem;
+    border-radius: var(--radius-sm);
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+pre code { background: none; color: inherit; padding: 0; }
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.25rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-decoration: none;
+    color: #fff;
+    background: var(--gradient);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    font-family: inherit;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -12px rgba(99, 102, 241, 0.8); }
+.btn:active { transform: translateY(0); }
+.btn.secondary {
+    background: var(--surface-2);
+    color: var(--text);
+    border-color: var(--border);
+}
+.btn.secondary:hover { border-color: var(--accent); box-shadow: none; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+
+.badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+.badge.bug { background: rgba(248, 113, 113, 0.18); color: var(--error); }
+.badge.exp { background: rgba(251, 191, 36, 0.18); color: var(--warning); }
+.badge.ok  { background: rgba(52, 211, 153, 0.18); color: var(--success); }
+
+.note {
+    border-left: 3px solid var(--accent);
+    background: rgba(129, 140, 248, 0.08);
+    padding: 0.9rem 1.1rem;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    color: var(--text-soft);
+    margin: 1.25rem 0;
+}
+
+table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 0.92rem; }
+th, td { border: 1px solid var(--border); padding: 0.7rem 0.85rem; text-align: left; }
+th { background: var(--surface-2); font-weight: 600; }
+
+.log {
+    background: #0b1120;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.82rem;
+    max-height: 280px;
+    overflow-y: auto;
+}
+.log-entry { padding: 0.35rem 0.5rem; border-bottom: 1px solid rgba(148, 163, 184, 0.12); }
+.log-entry:last-child { border-bottom: none; }
+.log-entry.error { color: var(--error); }
+.log-entry.warning { color: var(--warning); }
+.log-entry.success { color: var(--success); }
+.log-entry.muted { color: var(--text-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}

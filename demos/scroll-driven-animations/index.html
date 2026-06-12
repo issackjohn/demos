@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scroll-Driven Animations · Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../demo.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎞️</text></svg>">
+    <style>
+        /* Reading-progress bar driven purely by scroll position */
+        .progress-bar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            transform-origin: 0 50%;
+            transform: scaleX(0);
+            background: var(--gradient);
+            z-index: 50;
+        }
+
+        @keyframes grow-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+        @supports (animation-timeline: scroll()) {
+            .progress-bar {
+                animation: grow-progress auto linear;
+                animation-timeline: scroll(root block);
+            }
+            .supported { display: inline; }
+            .unsupported { display: none; }
+        }
+        @supports not (animation-timeline: scroll()) {
+            .supported { display: none; }
+            .unsupported { display: inline; }
+        }
+
+        .reveal-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            margin: 1.25rem 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        .reveal-card .num {
+            font-size: 1.6rem;
+            font-weight: 800;
+            width: 3.2rem; height: 3.2rem;
+            flex: none;
+            display: grid; place-items: center;
+            border-radius: 0.85rem;
+            background: var(--gradient);
+            color: #fff;
+        }
+        .reveal-card h3 { font-size: 1.1rem; }
+        .reveal-card p { color: var(--text-soft); font-size: 0.92rem; }
+
+        @keyframes reveal {
+            from { opacity: 0; transform: translateY(40px) scale(0.96); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @supports (animation-timeline: view()) {
+            .reveal-card {
+                animation: reveal linear both;
+                animation-timeline: view();
+                animation-range: entry 0% cover 38%;
+            }
+        }
+
+        .spacer { height: 30vh; display: grid; place-items: center; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <div class="progress-bar"></div>
+    <div class="container">
+        <a class="back-link" href="../../index.html">← Back to demos</a>
+
+        <div class="demo-hero">
+            <span class="eyebrow">🎞️ Rendering</span>
+            <h1><span class="grad">Scroll-Driven</span> Animations</h1>
+            <p class="lead">
+                CSS scroll-driven animations let you tie keyframes to the scroll
+                progress of a container or an element's visibility — no JavaScript,
+                no scroll listeners. Scroll down to see it in action.
+            </p>
+        </div>
+
+        <div class="panel">
+            <h2>Browser support</h2>
+            <p>
+                <span class="supported"><span class="badge ok">Supported ✓</span> Your browser supports <code>animation-timeline</code>. The bar at the top and the cards below are scroll-driven.</span>
+                <span class="unsupported"><span class="badge exp">Not supported</span> This browser doesn't support scroll-driven animations yet. Try the latest Chrome/Edge.</span>
+            </p>
+        </div>
+
+        <div class="spacer">↓ keep scrolling ↓</div>
+
+        <div class="reveal-card"><div class="num">1</div><div><h3>Scroll-timeline progress bar</h3><p>The top bar maps the document's scroll position to <code>scaleX()</code> via <code>scroll(root block)</code>.</p></div></div>
+        <div class="reveal-card"><div class="num">2</div><div><h3>View-timeline reveals</h3><p>Each card animates as it enters the viewport using <code>animation-timeline: view()</code>.</p></div></div>
+        <div class="reveal-card"><div class="num">3</div><div><h3>Zero JavaScript</h3><p>All motion here is declarative CSS. No <code>requestAnimationFrame</code>, no scroll events, no jank.</p></div></div>
+        <div class="reveal-card"><div class="num">4</div><div><h3>Range-based control</h3><p><code>animation-range: entry 0% cover 38%</code> defines exactly when the reveal plays.</p></div></div>
+        <div class="reveal-card"><div class="num">5</div><div><h3>Accessible by default</h3><p>Respects <code>prefers-reduced-motion</code> so motion-sensitive users aren't affected.</p></div></div>
+
+        <div class="panel">
+            <h2>How it works</h2>
+            <pre><code>/* Progress bar tied to the document scroll */
+@keyframes grow-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.progress-bar {
+  animation: grow-progress auto linear;
+  animation-timeline: scroll(root block);
+  transform-origin: left;
+}
+
+/* Reveal cards as they scroll into view */
+.reveal-card {
+  animation: reveal linear both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 38%;
+}</code></pre>
+        </div>
+
+        <div class="spacer">🎉 you reached the end</div>
+    </div>
+</body>
+</html>
