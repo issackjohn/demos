@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Crypto Hashing · Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../demo.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
+    <style>
+        textarea {
+            width: 100%;
+            min-height: 110px;
+            resize: vertical;
+            background: #0b1120;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            padding: 0.9rem 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+        textarea:focus { outline: none; border-color: var(--accent); }
+
+        .algo-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+        .algo {
+            padding: 0.45rem 0.95rem;
+            border-radius: 2rem;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            color: var(--text-soft);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+        .algo.active { background: var(--gradient); color: #fff; border-color: transparent; }
+
+        .digest {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            word-break: break-all;
+            background: #0b1120;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.1rem;
+            color: #8ee6c9;
+            min-height: 3.4rem;
+        }
+        .meta { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 0.85rem; color: var(--text-muted); font-size: 0.85rem; }
+        .meta b { color: var(--accent); font-variant-numeric: tabular-nums; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="back-link" href="../../index.html">← Back to demos</a>
+
+        <div class="demo-hero">
+            <span class="eyebrow">🔐 Security</span>
+            <h1><span class="grad">Web Crypto</span> Hashing</h1>
+            <p class="lead">
+                <code>crypto.subtle.digest()</code> computes cryptographic hashes
+                natively in the browser. Everything below runs locally — your text
+                never leaves the page.
+            </p>
+        </div>
+
+        <div class="panel">
+            <h2>Input</h2>
+            <textarea id="input" spellcheck="false">The quick brown fox jumps over the lazy dog</textarea>
+
+            <div class="algo-row" id="algos">
+                <button class="algo active" data-algo="SHA-256">SHA-256</button>
+                <button class="algo" data-algo="SHA-1">SHA-1</button>
+                <button class="algo" data-algo="SHA-384">SHA-384</button>
+                <button class="algo" data-algo="SHA-512">SHA-512</button>
+            </div>
+
+            <h2 style="margin-top:0.5rem;">Digest <span class="badge ok" id="algoBadge">SHA-256</span></h2>
+            <div class="digest" id="digest">…</div>
+            <div class="meta">
+                <span>Length: <b id="len">0</b> hex chars</span>
+                <span>Computed in <b id="time">0</b> ms</span>
+                <span id="secureNote"></span>
+            </div>
+            <div class="btn-row" style="margin-top:1rem;">
+                <button class="btn secondary" id="copyHash">📋 Copy digest</button>
+            </div>
+        </div>
+
+        <div class="note">
+            🔒 <code>crypto.subtle</code> is only available in <strong>secure contexts</strong>
+            (HTTPS or localhost). On GitHub Pages it's served over HTTPS, so it works.
+        </div>
+
+        <div class="panel">
+            <h2>How it works</h2>
+            <pre><code>async function hash(text, algo = 'SHA-256') {
+  const data = new TextEncoder().encode(text);
+  const digest = await crypto.subtle.digest(algo, data);
+  return [...new Uint8Array(digest)]
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}</code></pre>
+        </div>
+    </div>
+
+    <script>
+        const input = document.getElementById('input');
+        const digestEl = document.getElementById('digest');
+        const lenEl = document.getElementById('len');
+        const timeEl = document.getElementById('time');
+        const algoBadge = document.getElementById('algoBadge');
+        const secureNote = document.getElementById('secureNote');
+        let algo = 'SHA-256';
+
+        if (!window.crypto || !crypto.subtle) {
+            secureNote.innerHTML = '<span class="badge bug">SubtleCrypto unavailable (insecure context)</span>';
+        }
+
+        async function hash(text, algorithm) {
+            const data = new TextEncoder().encode(text);
+            const buf = await crypto.subtle.digest(algorithm, data);
+            return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function update() {
+            if (!window.crypto || !crypto.subtle) { digestEl.textContent = 'Unavailable in this context.'; return; }
+            const t0 = performance.now();
+            const hex = await hash(input.value, algo);
+            const t1 = performance.now();
+            digestEl.textContent = hex;
+            lenEl.textContent = hex.length;
+            timeEl.textContent = (t1 - t0).toFixed(2);
+            algoBadge.textContent = algo;
+        }
+
+        input.addEventListener('input', update);
+        document.getElementById('algos').addEventListener('click', e => {
+            const btn = e.target.closest('.algo');
+            if (!btn) return;
+            document.querySelectorAll('.algo').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            algo = btn.dataset.algo;
+            update();
+        });
+        document.getElementById('copyHash').addEventListener('click', async () => {
+            try { await navigator.clipboard.writeText(digestEl.textContent); } catch (_) {}
+        });
+
+        update();
+    </script>
+</body>
+</html>

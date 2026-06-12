@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intersection Observer · Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../demo.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👁️</text></svg>">
+    <style>
+        .hud {
+            position: sticky;
+            top: 1rem;
+            z-index: 20;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem 1.25rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+        .hud .metric { display: flex; flex-direction: column; }
+        .hud .metric b { font-size: 1.4rem; color: var(--accent); font-variant-numeric: tabular-nums; }
+        .hud .metric span { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+        .observe {
+            min-height: 180px;
+            margin: 1.25rem 0;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            opacity: 0.25;
+            transform: translateY(28px) scale(0.97);
+            transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.4s ease;
+        }
+        .observe.in-view {
+            opacity: 1;
+            transform: none;
+            border-color: var(--accent);
+        }
+        .observe .dot {
+            width: 14px; height: 14px; border-radius: 50%;
+            background: var(--text-muted); flex: none;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+        .observe.in-view .dot { background: var(--success); box-shadow: 0 0 0 6px rgba(52,211,153,.2); }
+        .observe h3 { font-size: 1.1rem; }
+        .observe .ratio { margin-left: auto; font-family: 'JetBrains Mono', monospace; color: var(--accent); font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="back-link" href="../../index.html">← Back to demos</a>
+
+        <div class="demo-hero">
+            <span class="eyebrow">👁️ Web APIs</span>
+            <h1><span class="grad">Intersection</span> Observer</h1>
+            <p class="lead">
+                <code>IntersectionObserver</code> asynchronously reports when elements
+                enter or leave the viewport — perfect for lazy-loading, reveal animations
+                and analytics, without expensive scroll listeners.
+            </p>
+        </div>
+
+        <div class="hud">
+            <div class="metric"><b id="visibleCount">0</b><span>In view</span></div>
+            <div class="metric"><b id="seenCount">0</b><span>Ever seen</span></div>
+            <div class="metric"><b id="topRatio">0%</b><span>Top item ratio</span></div>
+        </div>
+
+        <p style="color:var(--text-soft)">Scroll — each panel fades in as it crosses the viewport, and its live intersection ratio updates in real time.</p>
+
+        <div id="items"></div>
+
+        <div class="panel">
+            <h2>How it works</h2>
+            <pre><code>const observer = new IntersectionObserver((entries) => {
+  for (const entry of entries) {
+    entry.target.classList.toggle('in-view', entry.isIntersecting);
+    const pct = Math.round(entry.intersectionRatio * 100);
+    entry.target.querySelector('.ratio').textContent = pct + '%';
+  }
+}, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+
+document.querySelectorAll('.observe').forEach(el => observer.observe(el));</code></pre>
+        </div>
+    </div>
+
+    <script>
+        const labels = ['Hero banner', 'Featured grid', 'Pricing table', 'Testimonials', 'Newsletter', 'Footer CTA'];
+        const itemsRoot = document.getElementById('items');
+        labels.forEach((label, i) => {
+            const el = document.createElement('section');
+            el.className = 'observe';
+            el.innerHTML = `<span class="dot"></span>
+                <div><h3>${label}</h3><p style="color:var(--text-soft);font-size:.9rem">Section #${i + 1}</p></div>
+                <span class="ratio">0%</span>`;
+            itemsRoot.appendChild(el);
+        });
+
+        const seen = new Set();
+        const visibleCount = document.getElementById('visibleCount');
+        const seenCount = document.getElementById('seenCount');
+        const topRatio = document.getElementById('topRatio');
+
+        const observer = new IntersectionObserver((entries) => {
+            for (const entry of entries) {
+                entry.target.classList.toggle('in-view', entry.isIntersecting);
+                const pct = Math.round(entry.intersectionRatio * 100);
+                entry.target.querySelector('.ratio').textContent = pct + '%';
+                if (entry.isIntersecting) seen.add(entry.target);
+            }
+            const all = document.querySelectorAll('.observe');
+            visibleCount.textContent = document.querySelectorAll('.observe.in-view').length;
+            seenCount.textContent = seen.size;
+            const first = [...all].find(el => el.classList.contains('in-view'));
+            topRatio.textContent = first ? first.querySelector('.ratio').textContent : '0%';
+        }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+
+        document.querySelectorAll('.observe').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

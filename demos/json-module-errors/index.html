@@ -3,206 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON Module Error Sanitization Demo</title>
+    <title>JSON Module Error Sanitization · Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../demo.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐛</text></svg>">
     <style>
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
+        .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+        @media (max-width: 720px) { .compare { grid-template-columns: 1fr; } }
+        .compare .panel { margin: 0; }
+        .result {
+            margin-top: 1rem;
+            background: #0b1120;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
             line-height: 1.6;
-            color: #1e293b;
-            background: #f8fafc;
-            margin: 0;
-            padding: 2rem;
+            min-height: 5.5rem;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            color: #3b82f6;
-            margin-bottom: 1rem;
-        }
-
-        h2 {
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 0.5rem;
-            margin-top: 2.5rem;
-        }
-
-        .info-panel {
-            background: #eff6ff;
-            border-left: 4px solid #3b82f6;
-            padding: 1rem;
-            margin: 1.5rem 0;
-            border-radius: 0 0.5rem 0.5rem 0;
-        }
-
-        code {
-            background: #e2e8f0;
-            padding: 0.2rem 0.4rem;
-            border-radius: 0.25rem;
-            font-family: 'Courier New', monospace;
-        }
-
-        pre {
-            background: #1e293b;
-            color: #f8fafc;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            overflow-x: auto;
-            font-family: 'Courier New', monospace;
-        }
-
-        .demo-buttons {
-            display: flex;
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-
-        .demo-button {
-            display: inline-block;
-            background: #3b82f6;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            text-decoration: none;
-            font-weight: 500;
-            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.5);
-            transition: all 0.2s ease;
-        }
-
-        .demo-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px -1px rgba(59, 130, 246, 0.6);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            font-weight: bold;
-            margin-left: 0.5rem;
-        }
-
-        .badge-bug {
-            background-color: #fecaca;
-            color: #b91c1c;
-        }
-
-        .badge-experimental {
-            background-color: #fed7aa;
-            color: #c2410c;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-        }
-
-        th, td {
-            border: 1px solid #e2e8f0;
-            padding: 0.75rem;
-            text-align: left;
-        }
-
-        th {
-            background: #f1f5f9;
-            font-weight: 600;
-        }
-
-        tr:nth-child(even) {
-            background: #f8fafc;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .nav-links a {
-            color: #3b82f6;
-            text-decoration: none;
-        }
-
-        .nav-links a:hover {
-            text-decoration: underline;
-        }
+        .result .ok { color: var(--success); }
+        .result .bad { color: var(--error); }
+        .result .dim { color: var(--text-muted); }
+        .takeaway b { color: var(--accent); }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="nav-links">
-            <a href="../../index.html">← Back to Demos</a>
+        <a class="back-link" href="../../index.html">← Back to demos</a>
+
+        <div class="demo-hero">
+            <span class="eyebrow">🐛 Bug Reproduction</span>
+            <h1><span class="grad">JSON Module</span> Error Sanitization
+                <span class="badge bug" style="vertical-align:middle">Bug</span></h1>
+            <p class="lead">
+                When you import invalid JSON as a module, the error V8 surfaces is
+                heavily sanitized — no line, no column, no parse detail — even though
+                the exact same file parsed manually yields a precise error. This page
+                runs both paths live so you can see the difference.
+            </p>
         </div>
-        
-        <h1>JSON Module Error Sanitization Demo <span class="badge badge-bug">Bug</span> <span class="badge badge-experimental">V8</span></h1>
-        
-        <div class="info-panel">
-            <strong>Issue Summary:</strong> JSON module import errors are overly sanitized even when proper CORS headers and the <code>crossorigin</code> attribute would allow detailed error information.
-        </div>
-        
-        <h2>Background</h2>
-        <p>
-            When importing JSON as a module in the browser using <code>import data from 'data.json' assert { type: 'json' }</code>, 
-            V8 must sanitize parse errors unless the module is fetched with proper CORS headers and a <code>crossorigin</code> attribute. 
-            Currently, out-of-the-box JSON module errors are always overly sanitized (hiding useful line/column and message), 
-            even when CORS would allow full error details.
-        </p>        <h2>Demo Explanation</h2>
-        <p>
-            This proof-of-concept demonstrates the difference between JSON module import errors with and without the <code>crossorigin</code> attribute. 
-            The demo uses a single invalid JSON file (missing a comma) and shows how error reporting differs between the two approaches.
-        </p>
-        
-        <h3>Expected Behavior</h3>
-        <table>
-            <tr>
-                <th>Import Method</th>
-                <th>Expected Error Output</th>
-            </tr>
-            <tr>
-                <td>Without <code>crossorigin</code></td>
-                <td>Generic "Failed to load JSON module" error (details hidden)</td>
-            </tr>
-            <tr>
-                <td>With <code>crossorigin</code></td>
-                <td>Full parse error with message, line, and column information</td>
-            </tr>
-        </table>
-          <div class="demo-buttons">
-            <a href="no-cors/index.html" class="demo-button">Test WITHOUT crossorigin</a>
-            <a href="with-cors/index.html" class="demo-button">Test WITH crossorigin</a>
-        </div>
-        
-        <h2>Technical Details</h2>
-          <h3>The Invalid JSON File</h3>
-        <p>Here's the intentionally invalid JSON we're attempting to import (missing a comma after the closing brace):</p>
-        <pre>
-{
+
+        <div class="panel">
+            <h2>The intentionally-broken JSON</h2>
+            <p>We try to load this file (note the missing comma before <code>"missingComma"</code>):</p>
+            <pre><code>{
   "name": "JSON Module Error Test",
-  "description": "This JSON file is intentionally invalid",
   "version": "1.0.0",
   "properties": {
     "test": true,
     "count": 42
   } "missingComma": true
-}</pre>
-        
-        <h3>Implementation Notes</h3>
-        <p>This demo is based on the Web Platform Tests (WPT) structure for JSON modules. Both test pages:</p>
-        <ul>
-            <li>Use the newer <code>with { type: 'json' }</code> syntax (replaces <code>assert</code>)</li>
-            <li>Include <code>onerror</code> handlers on the script tags</li>
-            <li>Use a <code>document._log</code> array to capture events like the WPT tests</li>
-            <li>Display captured errors directly in the UI</li>
-            <li>Are served from the same origin</li>        </ul>
+}</code></pre>
+        </div>
+
+        <div class="btn-row" style="margin: 1.5rem 0;">
+            <button class="btn" id="runBtn">▶ Run both tests</button>
+            <button class="btn secondary" id="clearBtn">Clear</button>
+        </div>
+
+        <div class="compare">
+            <div class="panel">
+                <h2>① Import as a JSON module</h2>
+                <p style="font-size:0.9rem"><code>import(url, { with: { type: 'json' } })</code></p>
+                <div class="result" id="moduleResult"><span class="dim">Not run yet.</span></div>
+            </div>
+            <div class="panel">
+                <h2>② Fetch + <code>JSON.parse</code></h2>
+                <p style="font-size:0.9rem">Manual parse of the <em>same</em> file</p>
+                <div class="result" id="manualResult"><span class="dim">Not run yet.</span></div>
+            </div>
+        </div>
+
+        <div class="note takeaway" id="takeaway" style="display:none"></div>
+
+        <div class="panel">
+            <h2>Expected vs actual</h2>
+            <table>
+                <tr><th>Path</th><th>Error detail you'd want</th><th>What you actually get</th></tr>
+                <tr>
+                    <td>JSON <strong>module</strong> import</td>
+                    <td>Parse message + line/column</td>
+                    <td>Generic “failed to fetch/parse module” — <strong>sanitized</strong></td>
+                </tr>
+                <tr>
+                    <td>Manual <code>JSON.parse</code></td>
+                    <td>Parse message + position</td>
+                    <td>Full <code>SyntaxError</code> with position ✓</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="panel">
+            <h2>Dig deeper</h2>
+            <p>Two minimal pages that import the module with and without the <code>crossorigin</code> attribute on the importing script:</p>
+            <div class="btn-row" style="margin-top:1rem;">
+                <a class="btn secondary" href="no-cors/index.html">Without crossorigin →</a>
+                <a class="btn secondary" href="with-cors/index.html">With crossorigin →</a>
+            </div>
+        </div>
     </div>
+
+    <script type="module">
+        const JSON_URL = '../broken-data.json';
+        const moduleResult = document.getElementById('moduleResult');
+        const manualResult = document.getElementById('manualResult');
+        const takeaway = document.getElementById('takeaway');
+
+        function line(parent, text, cls = '') {
+            const span = document.createElement('span');
+            if (cls) span.className = cls;
+            span.textContent = text + '\n';
+            parent.appendChild(span);
+        }
+
+        async function importAsModule() {
+            moduleResult.innerHTML = '';
+            line(moduleResult, '⏳ importing as JSON module…', 'dim');
+            try {
+                const mod = await import(JSON_URL, { with: { type: 'json' } });
+                moduleResult.innerHTML = '';
+                line(moduleResult, '✓ Import succeeded (unexpected):', 'ok');
+                line(moduleResult, JSON.stringify(mod.default, null, 2));
+                return { ok: true };
+            } catch (err) {
+                moduleResult.innerHTML = '';
+                line(moduleResult, '✗ ' + err.name, 'bad');
+                line(moduleResult, err.message || '(no message)', 'bad');
+                const hasPos = /line|column|position|:\d+:\d+/i.test(err.message || '');
+                line(moduleResult, hasPos ? 'Position info: present' : 'Position info: MISSING (sanitized)', 'dim');
+                return { ok: false, detailed: hasPos };
+            }
+        }
+
+        async function parseManually() {
+            manualResult.innerHTML = '';
+            line(manualResult, '⏳ fetching + JSON.parse…', 'dim');
+            try {
+                const text = await fetch(JSON_URL).then(r => r.text());
+                JSON.parse(text);
+                manualResult.innerHTML = '';
+                line(manualResult, '✓ Parsed OK (unexpected)', 'ok');
+                return { ok: true };
+            } catch (err) {
+                manualResult.innerHTML = '';
+                line(manualResult, '✗ ' + err.name, 'bad');
+                line(manualResult, err.message || '(no message)', 'bad');
+                const hasPos = /line|column|position|:\d+:\d+/i.test(err.message || '');
+                line(manualResult, hasPos ? 'Position info: present ✓' : 'Position info: missing', 'dim');
+                return { ok: false, detailed: hasPos };
+            }
+        }
+
+        async function run() {
+            takeaway.style.display = 'none';
+            const [m, p] = await Promise.all([importAsModule(), parseManually()]);
+            takeaway.style.display = 'block';
+            if (!m.detailed && p.detailed) {
+                takeaway.innerHTML = '🔎 <b>Reproduced:</b> the manual parse gives a precise position, but the JSON <b>module</b> import error is sanitized — exactly the reported bug.';
+            } else {
+                takeaway.innerHTML = '🔎 Both paths reported errors. Compare the detail in each panel above — the module path typically omits position info.';
+            }
+        }
+
+        document.getElementById('runBtn').addEventListener('click', run);
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            moduleResult.innerHTML = '<span class="dim">Not run yet.</span>';
+            manualResult.innerHTML = '<span class="dim">Not run yet.</span>';
+            takeaway.style.display = 'none';
+        });
+
+        // auto-run once on load so the preview shows live results
+        run();
+    </script>
 </body>
 </html>
